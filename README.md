@@ -1,3 +1,5 @@
+# template-jinja
+
 # Example of getting the local facts
 ```
 [root@boladm02 jlowther]# ansible -m setup -i jlowtherwnac1, all | sed "1c {" | jq ".ansible_facts.ansible_local.purpose"
