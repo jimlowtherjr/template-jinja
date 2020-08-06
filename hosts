@@ -1,0 +1,11 @@
+localhost
+
+[boise]
+jlowtherwnac1.micron.com
+
+[meridian]
+jlowther-lnx.micron.com
+
+[idaho:children]
+boise
+meridian

@@ -1,0 +1,49 @@
+---
+  - name:                     Test a jinja template
+    hosts:                    all
+
+    vars:
+      purpose_bill_to:        "Operations - Servers"
+      purpose_requestor:      "jlowther"
+      # purpose_build_date:     "11/02/2018"
+      purpose_used_by:        "jlowther"
+      purpose_contact_group:  "mti_unix_l2"
+      purpose_classification: "DEV"
+      purpose_sox_in_scope:   "no"
+      purpose_managed_by:     "ECP Unix"
+      purpose_support_tier:   "4"
+
+    tasks:
+
+      - name:                 collect file creation data on /root/anaconda-ks.cfg
+        stat:
+          path:               "/root/anaconda-ks.cfg"
+        register:             ana_stat
+
+      - name:                 print out truncated ctime
+        debug:
+          msg:                "{{ ana_stat.stat.ctime | int }}"
+
+      - name:                 Assign creation date to the purpose_build_date fact
+        set_fact:
+          purpose_build_date: "{{ '%Y-%m-%d' | strftime ( ana_stat.stat.ctime | int ) }}"
+
+      - name:                 Print out the purpose_build_date variable
+        debug:
+          msg:                'purpose_build_date: {{ purpose_build_date }}'
+
+      - name:                 Make sure we have /etc/ansible/facts.d
+        file:
+          state:              directory
+          path:               /etc/ansible
+          owner:              root
+          group:              root
+          mode:               "0755"
+        loop:
+          -                   /etc/ansible
+          -                   /etc/ansible/facts.d
+
+      - name:                 Create a file from a jinja template
+        template:
+          src:                etc-ansible-facts.d-purpose.j2
+          dest:               "/etc/ansible/facts.d/purpose.fact"
